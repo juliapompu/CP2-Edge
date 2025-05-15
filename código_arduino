@@ -1,6 +1,6 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include <Adafruit_Sensor.h>   
+#include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <DHT_U.h>
 
@@ -49,10 +49,10 @@ float mediaTemp = 0;
 int mediaUmid = 0;
 
 //DHT
-#define DHTTYPE    DHT11 
-//#define DHTTYPE      DHT22  
-#define DHTPIN 8 
-DHT_Unified dht(DHTPIN, DHTTYPE);  
+#define DHTTYPE    DHT11                           // Sensor DHT11
+//#define DHTTYPE      DHT22                       // Sensor DHT22 ou AM2302
+#define DHTPIN 8                                   // Pino do Arduino conectado no Sensor(Data) 
+DHT_Unified dht(DHTPIN, DHTTYPE);                  // configurando o Sensor DHT - pino e tipo
 uint32_t delayMS; 
 
 
@@ -68,10 +68,10 @@ void setup() {
   pinMode(buzzer, OUTPUT);
   pinMode(sensorUmid, INPUT);
   Serial.begin(9600);
-  dht.begin();                                   
+  dht.begin();                                    // inicializa a função
   Serial.println("Usando o Sensor DHT");
   sensor_t sensor;
-  dht.temperature().getSensor(&sensor);
+  dht.temperature().getSensor(&sensor);           // imprime os detalhes do Sensor de Temperatura
   Serial.println("------------------------------------");
   Serial.println("Temperatura");
   Serial.print  ("Sensor:       "); Serial.println(sensor.name);
@@ -79,7 +79,7 @@ void setup() {
   Serial.print  ("Valor min:    "); Serial.print(sensor.min_value); Serial.println(" *C");
   Serial.print  ("Resolucao:   "); Serial.print(sensor.resolution); Serial.println(" *C");
   Serial.println("------------------------------------");
-  dht.humidity().getSensor(&sensor);
+  dht.humidity().getSensor(&sensor);            // imprime os detalhes do Sensor de Umidade
   Serial.println("------------------------------------");
   Serial.println("Umidade");
   Serial.print  ("Sensor:       "); Serial.println(sensor.name);
@@ -95,27 +95,27 @@ void loop() {
   verifica_sensores();
   aciona_alarmes();
   mostra_mensagem();
-  delay(delayMS); 
-  sensors_event_t event; 
-  dht.temperature().getEvent(&event);  
-  if (isnan(event.temperature)) 
+  delay(delayMS);                               // atraso entre as medições
+  sensors_event_t event;                        // inicializa o evento da Temperatura
+  dht.temperature().getEvent(&event);           // faz a leitura da Temperatura
+  if (isnan(event.temperature))                 // se algum erro na leitura
   {
     Serial.println("Erro na leitura da Temperatura!");
   }
-  else 
+  else                                          // senão
   {
-    Serial.print("Temperatura: ");
+    Serial.print("Temperatura: ");              // imprime a Temperatura
     Serial.print(event.temperature);
     Serial.println(" *C");
   }
-  dht.humidity().getEvent(&event);  
-  if (isnan(event.relative_humidity))  
+  dht.humidity().getEvent(&event);              // faz a leitura de umidade
+  if (isnan(event.relative_humidity))           // se algum erro na leitura
   {
     Serial.println("Erro na leitura da Umidade!");
   }
-  else  
+  else                                          // senão
   {
-    Serial.print("Umidade: ");     
+    Serial.print("Umidade: ");                  // imprime a Umidade
     Serial.print(event.relative_humidity);
     Serial.println("%");
   }
@@ -144,7 +144,7 @@ void ler_sensores() {
 
 void verifica_sensores() {
   // Classificação da luz e LEDs
-  if (valorLDR <= 600) 
+  if (valorLDR >= 500 && valorLDR <=700) 
   {
     digitalWrite(ledVerde, HIGH);
     digitalWrite(ledVermelho, LOW);
@@ -209,11 +209,11 @@ void mostra_mensagem() {
 
     switch (estadoDisplay) {
       case M_luz:
-        if (valorLDR<100)  {
+        if (valorLDR <=600)  {
           LCD.print("Ambiente: Escuro");
-        } else if (valorLDR >= 100 && valorLDR <= 300 ){
+        } else if (valorLDR >= 150 && valorLDR <= 300 ){
           LCD.print("Ambiente Meia-Luz");
-        } else if (valorLDR >= 600) {
+        } else if (valorLDR >= 100) {
           LCD.print("Ambiente Claro!");
         } else {
           LCD.print("Ambiente Normal");
@@ -221,7 +221,6 @@ void mostra_mensagem() {
         LCD.setCursor(0, 1);
         LCD.print("Luz: ");
         LCD.print(luminosidadePorcentagem);
-        LCD.print(" %");
         estadoDisplay = M_temp;
         break;
 
@@ -236,7 +235,7 @@ void mostra_mensagem() {
         }
         LCD.setCursor(0, 1);
         LCD.print("Temp: ");
-        LCD.print(mediaTemp);
+        LCD.print(mediaTemp - 60);
         LCD.print(" C");
         estadoDisplay = M_umid;
         break;
