@@ -1,4 +1,4 @@
-CP2 - Edge Computing 🍷💡
+#CP2 - Edge Computing 🍷💡
 Projeto: Vinheria Agnello – Monitoramento de Luminosidade, Temperatura e Umidade com Arduino
 
 Este repositório contém o projeto desenvolvido para o Checkpoint 02 da disciplina Edge Computing & Computer Systems (FIAP - 2025). Trata-se de um sistema físico e funcional montado com Arduino, focado no monitoramento da luminosidade, Temperatura e Umidade do ambiente de armazenamento da Vinheria Agnello, com o objetivo de preservar a qualidade dos vinhos.
